@@ -1,76 +1,79 @@
 <!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>Robomon: Motherboard Adventures</title><style>
-*{box-sizing:border-box;touch-action:none}html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:system-ui;background:#111}
-canvas{width:100vw;height:100vh;display:block}
-#dialog,#names,#decorate,#starters{position:fixed;z-index:10}
-#names{inset:0;background:linear-gradient(#bfeaff,#ecf8ff);display:flex;align-items:center;justify-content:center}
-.card{background:#fff;border:4px solid #263238;border-radius:18px;box-shadow:0 8px 0 #0003;padding:22px;width:min(90vw,460px);text-align:center}
-input{font-size:18px;padding:12px;border:2px solid #777;border-radius:10px;width:90%;margin:6px}
-button{font:800 17px system-ui;border:3px solid #27323a;border-radius:12px;padding:11px 16px;background:#fff;box-shadow:0 4px 0 #27323a;margin:5px}
-button:active{transform:translateY(3px);box-shadow:0 1px #27323a}
-#dialog{display:none;left:5%;right:5%;bottom:18px;background:#fff;border:4px solid #263238;border-radius:16px;padding:15px;font-weight:700}
-#decorate{display:none;right:10px;top:10px;background:#fffE;border:3px solid #333;border-radius:14px;padding:8px;max-width:250px}
-#starters{display:none;inset:0;background:#d9f3ff;align-items:center;justify-content:center;flex-direction:column}
-.starterRow{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}.starter{width:115px;height:150px}
-.mon{height:85px;display:flex;align-items:center;justify-content:center}
-#joy{position:fixed;z-index:6;left:25px;bottom:25px;width:130px;height:130px;border-radius:50%;background:#ffffff55;border:4px solid #fff9}
-#stick{position:absolute;width:54px;height:54px;left:50%;top:50%;margin:-27px;border-radius:50%;background:linear-gradient(#fff,#aebbc3);border:3px solid #344955;box-shadow:0 5px 8px #0005}
-#A{position:fixed;z-index:6;right:28px;bottom:40px;width:94px;height:94px;border-radius:50%;font-size:40px;color:white;background:radial-gradient(circle at 35% 25%,#ff8a8a,#d92736 60%,#9c1420);border:5px solid white;box-shadow:0 7px 0 #78121b}
-#top{position:fixed;top:10px;left:10px;background:#fffD;padding:8px 12px;border:3px solid #333;border-radius:12px;font-weight:800;z-index:5}
+<title>Robomon 3D</title><style>
+*{box-sizing:border-box;touch-action:none}html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:system-ui;background:#bde8ff}canvas{display:block}
+#creator{position:fixed;inset:0;z-index:50;background:linear-gradient(#bce9ff,#effaff);overflow:auto;padding:14px}.card{max-width:780px;margin:auto;background:#fff;border:3px solid #26343d;border-radius:18px;padding:16px;box-shadow:0 10px 25px #0002}
+h1{margin:0}.tabs{display:flex;gap:8px;margin:10px 0}.tabs button,.go,.opt{border:2px solid #26343d;border-radius:10px;padding:10px;background:#fff;font-weight:850}.active{background:#26343d!important;color:#fff}.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}label{font-size:12px;font-weight:800}select,input{width:100%;padding:8px;border:2px solid #a8b3b9;border-radius:8px;background:#fff}.go{width:100%;margin-top:12px;background:#42b968;color:#fff}
+#preview{height:220px;border-radius:14px;background:linear-gradient(#9edcff 60%,#91c86d 60%);position:relative;overflow:hidden}#pCanvas{width:100%;height:100%}
+#hud,#tip,#joy,#look,#cam,#A,#decor{display:none;position:fixed;z-index:10}#hud{top:10px;left:10px;background:#fffD;border:2px solid #26343d;border-radius:11px;padding:8px 11px;font-weight:850}
+#tip{top:10px;left:50%;transform:translateX(-50%);background:#17242ccc;color:#fff;padding:7px 11px;border-radius:10px;font-size:12px}
+#joy{left:24px;bottom:24px;width:138px;height:138px;border-radius:50%;background:#17263355;border:4px solid #ffffffcc}
+#stick{position:absolute;left:50%;top:50%;width:58px;height:58px;margin:-29px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#bdcbd2 62%,#7d929f);border:3px solid #344955}
+#look{right:0;top:0;width:62vw;height:75vh;z-index:6}#cam,#A,#decor{border:4px solid white;color:#fff;font-weight:900;box-shadow:0 6px 0 #15232d}
+#cam{right:22px;bottom:30px;width:96px;height:58px;border-radius:17px;background:#304b5e}#A{right:35px;bottom:110px;width:76px;height:76px;border-radius:50%;font-size:30px;background:#d92736;box-shadow:0 6px 0 #78121b}
+#decor{right:128px;bottom:33px;padding:10px;border-radius:12px;background:#6b4f8e}
+#modal,#decorate,#starter{display:none;position:fixed;inset:0;z-index:40;background:#0007;align-items:center;justify-content:center;padding:15px}.pop{width:min(92vw,500px);background:#fff;border:3px solid #26343d;border-radius:17px;padding:16px;text-align:center}.pop button{margin:5px;padding:10px;border:2px solid #26343d;border-radius:10px;background:#fff;font-weight:850}
+#starter .choices{display:flex;justify-content:center;gap:8px;flex-wrap:wrap}.mon{width:125px;height:145px}
+@media(max-width:600px){.grid{grid-template-columns:1fr 1fr}.card{padding:10px}#preview{height:170px}}
 </style></head><body>
-<canvas id="g"></canvas><div id="top">Upstairs Bedroom</div>
-<div id="names"><div class="card"><h1>ROBOMON</h1><p>Before our adventure begins...</p><input id="pname" maxlength="12" placeholder="Your name"><input id="rname" maxlength="12" placeholder="Your rival's name"><br><button onclick="begin()">BEGIN</button></div></div>
-<div id="joy"><div id="stick"></div></div><button id="A">A</button>
-<div id="decorate"><b>ROOM DECORATOR</b><br><button onclick="cycleBed()">Bed colour</button><button onclick="cyclePC()">PC colour</button><button onclick="addChair()">+ Chair</button><button onclick="addPlant()">+ Plant</button><button onclick="removeLast()">Remove last</button><button onclick="decorate.style.display='none'">Done</button></div>
-<div id="dialog"></div>
-<div id="starters"><div class="card"><h2>Professor Weggy</h2><p id="speech"></p><div class="starterRow">
-<button class="starter" onclick="choose('Sapling')"><div class="mon">🌱</div>Sapling</button>
-<button class="starter" onclick="choose('Billy')"><div class="mon">🤖</div>Billy</button>
-<button class="starter" onclick="choose('Bob')"><div class="mon">⚙️</div>Bob</button></div></div></div>
-<script>
-const C=g,X=C.getContext('2d');let W,H,P={x:220,y:260},joy={x:0,y:0},playerName='',rivalName='',room=true,lab=false,starter=null,rivalStarter=null;
-let bedColors=['#fff','#9ed6ff','#ffb8d2','#b8f0b1','#ffd782'],pcColors=['#d9d9d9','#242424','#76b7ff','#ef7c7c'],bi=0,pi=0,extras=[];
-function size(){C.width=innerWidth*devicePixelRatio;C.height=innerHeight*devicePixelRatio;X.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);W=innerWidth;H=innerHeight}onresize=size;size();
-function begin(){playerName=pname.value.trim()||'Player';rivalName=rname.value.trim()||'Rival';names.style.display='none';say(`Welcome, ${playerName}! This is your room. Tap A near furniture to interact.`)}
-function say(t){dialog.textContent=t;dialog.style.display='block';setTimeout(()=>dialog.style.display='none',2800)}
-function rect(x,y,w,h,c){X.fillStyle=c;X.fillRect(x,y,w,h);X.strokeStyle='#333';X.lineWidth=3;X.strokeRect(x,y,w,h)}
-function drawRoom(){
- X.fillStyle='#e9dfcf';X.fillRect(0,0,W,H);X.strokeStyle='#d0c1aa';X.lineWidth=1;for(let i=0;i<W;i+=35){X.beginPath();X.moveTo(i,0);X.lineTo(i,H);X.stroke()}
- rect(40,45,115,190,bedColors[bi]);X.fillStyle='#f7f7f7';X.fillRect(45,50,105,45);X.strokeRect(45,50,105,45);
- rect(W-160,60,90,55,pcColors[pi]);rect(W-150,115,70,42,'#8b6849');X.fillStyle='#6ee7ff';X.fillRect(W-148,68,66,35);
- rect(W/2-55,H-42,110,42,'#a67b52');X.fillStyle='#fff';X.fillText('STAIRS',W/2-25,H-18);
- extras.forEach(e=>{if(e.t==='chair'){rect(e.x,e.y,35,35,'#d38b59')}else{X.fillStyle='#4eaa5b';X.beginPath();X.arc(e.x+15,e.y+10,16,0,7);X.fill();rect(e.x+5,e.y+22,22,24,'#b87949')}})
-}
-function drawTown(){
- X.fillStyle='#72bf5c';X.fillRect(0,0,W,H);X.fillStyle='#d6c28a';X.fillRect(W/2-55,0,110,H);
- // home
- rect(35,55,150,120,'#f1e5ce');X.fillStyle='#b85a4e';X.beginPath();X.moveTo(25,55);X.lineTo(110,10);X.lineTo(195,55);X.fill();rect(95,125,35,50,'#6b4936');
- // lab
- rect(W-230,55,190,150,'#e8eef2');X.fillStyle='#537a9c';X.beginPath();X.moveTo(W-245,55);X.lineTo(W-135,10);X.lineTo(W-25,55);X.fill();rect(W-155,145,40,60,'#607d8b');X.fillStyle='#222';X.font='bold 15px system-ui';X.fillText("WEGGY LAB",W-190,90);
-}
-function drawLab(){
- X.fillStyle='#d7e6e8';X.fillRect(0,0,W,H);for(let i=0;i<W;i+=48){X.strokeStyle='#b5c8ca';X.strokeRect(i,0,48,H)}
- rect(W/2-170,80,340,85,'#e7e0cc');['Sapling','Billy','Bob'].forEach((n,i)=>{let xx=W/2-110+i*110;X.fillStyle=['#61a94f','#68a8d8','#d9a05b'][i];X.beginPath();X.arc(xx,115,22,0,7);X.fill();X.fillStyle='#222';X.font='12px system-ui';X.fillText(n,xx-20,153)})
- X.fillStyle='#784f31';X.fillRect(W/2-16,220,32,45);X.fillStyle='#f1c4a0';X.beginPath();X.arc(W/2,210,18,0,7);X.fill();X.fillStyle='#fff';X.font='bold 13px system-ui';X.fillText('PROF. WEGGY',W/2-47,285)
-}
-function drawPlayer(){X.fillStyle='#e14b45';X.fillRect(P.x-12,P.y-8,24,28);X.fillStyle='#efc09c';X.beginPath();X.arc(P.x,P.y-16,10,0,7);X.fill();X.fillStyle='#283744';X.fillRect(P.x-11,P.y-26,22,6)}
-function render(){X.clearRect(0,0,W,H);if(room)drawRoom();else if(lab)drawLab();else drawTown();drawPlayer()}
-function loop(){if(names.style.display==='none'&&starters.style.display!=='flex'){let m=Math.hypot(joy.x,joy.y)||1;if(m>.1){P.x+=joy.x/m*3;P.y+=joy.y/m*3}P.x=Math.max(15,Math.min(W-15,P.x));P.y=Math.max(20,Math.min(H-20,P.y))}render();requestAnimationFrame(loop)}requestAnimationFrame(loop);
-function cycleBed(){bi=(bi+1)%bedColors.length}function cyclePC(){pi=(pi+1)%pcColors.length}
-function addChair(){extras.push({t:'chair',x:180+Math.random()*150,y:80+Math.random()*150})}function addPlant(){extras.push({t:'plant',x:180+Math.random()*150,y:80+Math.random()*150})}function removeLast(){extras.pop()}
-A.onclick=()=>{
- if(room){
-  if(Math.hypot(P.x-95,P.y-140)<110){decorate.style.display='block';return}
-  if(Math.hypot(P.x-(W-115),P.y-90)<90){decorate.style.display='block';return}
-  if(P.y>H-90){room=false;P={x:110,y:220};top.textContent='Home Town';say('Mum: Professor Weggy was looking for you. His lab is across town!')}
- }else if(!lab){
-  if(P.x>W-260&&P.y<240){lab=true;P={x:W/2,y:H-70};top.textContent="Professor Weggy's Lab";say(`${rivalName} is already here. Professor Weggy is waiting by the starter table.`)}
- }else if(Math.hypot(P.x-W/2,P.y-230)<90&&!starter){
-   speech.textContent=`${playerName}, ${rivalName} — today you each receive your first Robomon. ${playerName}, you may choose first.`;
-   starters.style.display='flex'
- }
-};
-function choose(n){starter=n;let others=['Sapling','Billy','Bob'].filter(x=>x!==n);rivalStarter=others[Math.floor(Math.random()*others.length)];starters.style.display='none';say(`${playerName} chose ${starter}! ${rivalName} chose ${rivalStarter}! Professor Weggy gives you 5 Motherboards.`);top.textContent=`${playerName} · ${starter} · Motherboards ×5`}
-const J=joy,ST=stick;function jm(e){let r=J.getBoundingClientRect(),q=e.touches?e.touches[0]:e,dx=q.clientX-(r.left+r.width/2),dy=q.clientY-(r.top+r.height/2),m=Math.hypot(dx,dy)||1,d=Math.min(38,m);joy={x:dx/m*d/38,y:dy/m*d/38};ST.style.transform=`translate(${dx/m*d}px,${dy/m*d}px)`}
-J.addEventListener('touchstart',jm);J.addEventListener('touchmove',jm);J.addEventListener('touchend',()=>{joy={x:0,y:0};ST.style.transform=''});
+<div id="creator"><div class="card"><h1>ROBOMON</h1><p>Build your character and your Rival.</p><div class="tabs"><button id="pt" class="active">YOU</button><button id="rt">RIVAL</button></div><div id="preview"><canvas id="pCanvas"></canvas></div><div class="grid">
+<label>Name<input id="name" maxlength="12"></label><label>Gender<select id="gender"><option>Male</option><option>Female</option></select></label>
+<label>Skin<select id="skin"><option value="#f2c7a5">Light</option><option value="#d9a079">Medium</option><option value="#a96f4f">Tan</option><option value="#70452f">Dark</option></select></label>
+<label>Face<select id="face"><option>Round</option><option>Oval</option><option>Square</option><option>Soft</option></select></label>
+<label>Eyes<select id="eyes"><option value="#49352a">Brown</option><option value="#4f83a6">Blue</option><option value="#4c7a53">Green</option><option value="#222222">Black</option><option value="#8b684f">Hazel</option></select></label>
+<label>Hair style<select id="hairStyle"><option>Bald</option><option>Short</option><option>Messy</option><option>Bob</option><option>Long</option><option>Ponytail</option><option>Curly</option></select></label>
+<label>Hair colour<input id="hair" type="color" value="#2a211d"></label><label>Top<select id="clothes"><option>T-Shirt</option><option>Jacket</option><option>Hoodie</option><option>Adventure Coat</option></select></label>
+<label>Top colour<input id="shirt" type="color" value="#ffffff"></label><label>Trousers<select id="trousers"><option>Trousers</option><option>Shorts</option><option>Adventure Pants</option></select></label>
+<label>Trouser colour<input id="pants" type="color" value="#ffffff"></label><label>Hat<select id="hat"><option>None</option><option>Cap</option><option>Beanie</option><option>Adventure Hat</option></select></label>
+<label>Hat colour<input id="hatColor" type="color" value="#ffffff"></label><label>Shoes<select id="shoes"><option>Trainers</option><option>Boots</option><option>High Tops</option></select></label>
+<label>Shoe colour<input id="shoeColor" type="color" value="#ffffff"></label><label>Socks<select id="socks"><option>Short</option><option>Long</option><option>Striped</option></select></label>
+<label>Sock colour<input id="sockColor" type="color" value="#ffffff"></label></div><button class="go" id="begin">ENTER THE 3D WORLD</button></div></div>
+<div id="hud"></div><div id="tip">Left: move · Right: look</div><div id="joy"><div id="stick"></div></div><div id="look"></div><button id="A">A</button><button id="cam">CAMERA</button><button id="decor">DECORATE</button>
+<div id="modal"><div class="pop"><h2 id="mt"></h2><p id="mb"></p><button onclick="modal.style.display='none'">OK</button></div></div>
+<div id="decorate"><div class="pop"><h2>Bedroom Decorator</h2><p>The bed and PC are permanent.</p><button id="bedC">Bed colour</button><button id="pcC">PC colour</button><button data-add="chair">+ Chair</button><button data-add="plant">+ Plant</button><button data-add="lamp">+ Lamp</button><button id="removeF">Remove last</button><button onclick="decorate.style.display='none'">DONE</button></div></div>
+<div id="starter"><div class="pop"><h2>Professor Weggy</h2><p id="starterText"></p><div class="choices"><button class="mon" data-mon="Sapling">🌱<br>Sapling</button><button class="mon" data-mon="Billy">🤖<br>Billy</button><button class="mon" data-mon="Bob">⚙️<br>Bob</button></div></div></div>
+<script type="module">
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js';
+const $=x=>document.getElementById(x), defaults={name:'Player',gender:'Male',skin:'#d9a079',face:'Round',eyes:'#49352a',hairStyle:'Bald',hair:'#2a211d',clothes:'T-Shirt',shirt:'#ffffff',trousers:'Trousers',pants:'#ffffff',hat:'None',hatColor:'#ffffff',shoes:'Trainers',shoeColor:'#ffffff',socks:'Short',sockColor:'#ffffff'};
+let chars={player:{...defaults},rival:{...defaults,name:'Rival',hair:'#68442b'}},editing='player',worldStarted=false,area='bedroom',starterName='',rivalStarter='',motherboards=0,bedIndex=0,pcIndex=0,extras=[];
+const fields=['name','gender','skin','face','eyes','hairStyle','hair','clothes','shirt','trousers','pants','hat','hatColor','shoes','shoeColor','socks','sockColor'];
+function load(){fields.forEach(k=>$(k).value=chars[editing][k]);$('pt').className=editing==='player'?'active':'';$('rt').className=editing==='rival'?'active':'';preview()}
+function save(){fields.forEach(k=>chars[editing][k]=$(k).value);preview()}fields.forEach(k=>$(k).oninput=save);
+$('pt').onclick=()=>{save();editing='player';load()};$('rt').onclick=()=>{save();editing='rival';load()};
+// 2D preview mirrors 3D selections
+function preview(){let c=$('pCanvas'),d=devicePixelRatio;c.width=c.clientWidth*d;c.height=c.clientHeight*d;let x=c.getContext('2d');x.setTransform(d,0,0,d,0,0);let W=c.clientWidth,H=c.clientHeight,a=chars[editing],cx=W/2;x.clearRect(0,0,W,H);x.fillStyle='#0002';x.beginPath();x.ellipse(cx,H-15,42,10,0,0,7);x.fill();x.fillStyle=a.pants;x.fillRect(cx-24,H-85,20,62);x.fillRect(cx+4,H-85,20,62);x.fillStyle=a.shoeColor;x.fillRect(cx-27,H-28,24,12);x.fillRect(cx+3,H-28,24,12);x.fillStyle=a.shirt;x.fillRect(cx-38,H-150,76,70);x.fillStyle=a.skin;x.beginPath();x.arc(cx,H-177,30,0,7);x.fill();if(a.hairStyle!=='Bald'){x.fillStyle=a.hair;x.beginPath();x.arc(cx,H-193,29,Math.PI,Math.PI*2);x.fill();if(a.hairStyle==='Long')x.fillRect(cx-30,H-195,60,50)}x.fillStyle=a.eyes;x.beginPath();x.arc(cx-11,H-178,3,0,7);x.arc(cx+11,H-178,3,0,7);x.fill();if(a.hat!=='None'){x.fillStyle=a.hatColor;x.fillRect(cx-31,H-207,62,13)}}
+load();
+// THREE
+const scene=new THREE.Scene(),camera=new THREE.PerspectiveCamera(65,innerWidth/innerHeight,.05,120),renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:'high-performance'});renderer.setSize(innerWidth,innerHeight);renderer.setPixelRatio(Math.min(devicePixelRatio,1.6));renderer.shadowMap.enabled=true;renderer.outputColorSpace=THREE.SRGBColorSpace;document.body.prepend(renderer.domElement);
+scene.background=new THREE.Color(0xb8e6ff);const hemi=new THREE.HemisphereLight(0xe8f7ff,0x76654d,2.2);scene.add(hemi);const sun=new THREE.DirectionalLight(0xfff1d5,3);sun.position.set(-6,9,5);sun.castShadow=true;scene.add(sun);
+const world=new THREE.Group();scene.add(world), mat=c=>new THREE.MeshStandardMaterial({color:c,roughness:.78});
+function box(parent,s,p,c){let m=new THREE.Mesh(new THREE.BoxGeometry(...s),mat(c));m.position.set(...p);m.castShadow=m.receiveShadow=true;parent.add(m);return m}
+function capsule(parent,r,l,p,c){let m=new THREE.Mesh(new THREE.CapsuleGeometry(r,l,6,12),mat(c));m.position.set(...p);m.castShadow=true;parent.add(m);return m}
+function makePerson(a){let g=new THREE.Group();capsule(g,.3,.45,[0,1.78,0],a.skin);box(g,[.72,.68,.38],[0,1.12,0],a.shirt);let legH=a.trousers==='Shorts'?.42:.68;box(g,[.27,legH,.3],[-.2,.45,0],a.pants);box(g,[.27,legH,.3],[.2,.45,0],a.pants);box(g,[.31,.16,.48],[-.2,.08,-.06],a.shoeColor);box(g,[.31,.16,.48],[.2,.08,-.06],a.shoeColor);capsule(g,.09,.48,[-.46,1.1,0],a.skin);capsule(g,.09,.48,[.46,1.1,0],a.skin);
+ if(a.hairStyle!=='Bald'){let h=new THREE.Mesh(new THREE.SphereGeometry(.315,16,10,0,Math.PI*2,0,Math.PI*.55),mat(a.hair));h.position.y=1.9;g.add(h);if(a.hairStyle==='Long'){box(g,[.62,.65,.16],[0,1.62,.16],a.hair)}if(a.hairStyle==='Ponytail'){let q=new THREE.Mesh(new THREE.SphereGeometry(.16,12,8),mat(a.hair));q.position.set(0,1.72,.3);g.add(q)}}
+ if(a.hat!=='None'){let h=box(g,[.68,.13,.5],[0,2.06,0],a.hatColor);if(a.hat==='Beanie')h.scale.set(.9,1.7,.9)}
+ let eyeMat=new THREE.MeshBasicMaterial({color:a.eyes});for(let ex of [-.11,.11]){let e=new THREE.Mesh(new THREE.SphereGeometry(.027,8,8),eyeMat);e.position.set(ex,1.82,-.3);g.add(e)}return g}
+let player=null,rival=null,bed=null,pc=null;
+function clear(){while(world.children.length)world.remove(world.children[0])}
+function shell(w=9,d=10){box(world,[w,.16,d],[0,-.08,0],0xc39a70);box(world,[w,4,.16],[0,2,-d/2],0xe9dfcf);box(world,[.16,4,d],[-w/2,2,0],0xe8ddcc);box(world,[.16,4,d],[w/2,2,0],0xe8ddcc)}
+function buildBedroom(){clear();scene.background.set(0xb9e8ff);shell();bed=box(world,[2.7,.42,1.55],[-2.6,.55,-2.8],['#ffffff','#9ed6ff','#ffb9cf','#b9e8ad'][bedIndex]);box(world,[.8,.18,1.1],[-3.35,.86,-2.8],0xffffff);box(world,[2.2,.13,.8],[2.6,.95,-3.6],0x876246);pc=box(world,[1.2,.8,.12],[2.6,1.55,-3.75],['#333b43','#6a87a0','#b66b7d','#e1e1e1'][pcIndex]);box(world,[1,.6,.03],[2.6,1.56,-3.67],0x57c9e4);box(world,[1.5,2.5,.13],[3.5,1.25,4.85],0x72523e);box(world,[1.5,2.6,.7],[3.4,1.3,-1.4],0xa47c59);extras.forEach((e,i)=>{let x=-.8+i*.65,z=-1+(i%2)*1.1;if(e==='chair'){box(world,[.6,.7,.6],[x,.35,z],0xc47d52);box(world,[.6,.7,.15],[x,.85,z+.23],0xc47d52)}else if(e==='plant'){box(world,[.45,.5,.45],[x,.25,z],0xa36d48);let q=new THREE.Mesh(new THREE.SphereGeometry(.45,12,8),mat(0x4e9d58));q.position.set(x,.85,z);world.add(q)}else{box(world,[.12,1.2,.12],[x,.6,z],0x555555);let q=new THREE.Mesh(new THREE.SphereGeometry(.28,12,8),mat(0xe8cf70));q.position.set(x,1.3,z);world.add(q)}});spawnPlayer(0,2.6)}
+function buildHall(){clear();shell(7,8);for(let i=0;i<6;i++)box(world,[2,.12,.7],[1.6,i*.18-0.02,2.8-i*.6],0x7d5a40);box(world,[1.4,2.5,.13],[-2.5,1.25,-3.85],0x72523e);spawnPlayer(-2,2.5)}
+function buildDown(){clear();shell(11,11);box(world,[3,.7,1.1],[-3,.38,-2.5],0x91a9b3);box(world,[3.4,.95,.7],[2.7,.48,-3.8],0xf0eee8);box(world,[1.5,2.5,.13],[4.6,1.25,5.35],0x72523e);spawnPlayer(0,2)}
+function buildTown(){clear();scene.background.set(0x8fd6f4);box(world,[30,.2,30],[0,-.1,0],0x72b95b);box(world,[4,.04,30],[0,.03,0],0xd5c18c);let home=box(world,[5,3.2,4],[-6,1.6,4],0xeee1cc);box(world,[1.3,2.3,.15],[-4.4,1.15,2],0x6f513d);let lab=box(world,[7,3.5,5],[6,1.75,-5],0xe6edf0);box(world,[1.6,2.5,.15],[6,1.25,-2.48],0x56778c);for(let i=0;i<12;i++){let t=box(world,[.45,2,.45],[-12+i*2.2,1,10],0x775338);let crown=new THREE.Mesh(new THREE.SphereGeometry(1.1,12,8),mat(0x4f9850));crown.position.set(t.position.x,2.4,10);world.add(crown)}spawnPlayer(-5,0)}
+function buildLab(){clear();shell(12,12);box(world,[5,.9,1.5],[0,.45,-3.2],0xe2d7c2);['Sapling','Billy','Bob'].forEach((n,i)=>{let col=[0x62a94f,0x66a5d6,0xd49a55][i],q=new THREE.Mesh(new THREE.SphereGeometry(.45,14,10),mat(col));q.position.set(-1.6+i*1.6,1.25,-3.2);world.add(q)});let prof=makePerson({...defaults,name:'Professor Weggy',hairStyle:'Short',shirt:'#ffffff',pants:'#3d4d59'});prof.position.set(0,0,-1.7);world.add(prof);rival=makePerson(chars.rival);rival.position.set(2,0,-1.5);world.add(rival);spawnPlayer(0,3.5)}
+function spawnPlayer(x,z){player=makePerson(chars.player);player.position.set(x,0,z);world.add(player)}
+function setArea(a){area=a;if(a==='bedroom')buildBedroom();if(a==='hall')buildHall();if(a==='downstairs')buildDown();if(a==='town')buildTown();if(a==='lab')buildLab();$('hud').textContent=(a==='town'?'Home Town':a[0].toUpperCase()+a.slice(1))+' · Third Person'}
+$('begin').onclick=()=>{save();worldStarted=true;$('creator').style.display='none';['hud','tip','joy','look','cam','A','decor'].forEach(x=>$(x).style.display='block');setArea('bedroom')};
+// controls
+let mv={x:0,y:0},yaw=Math.PI,pitch=-.08,mode=1,jid=null,lid=null,lx=0,ly=0;const J=$('joy'),S=$('stick');
+function jm(e){let r=J.getBoundingClientRect(),dx=e.clientX-(r.left+r.width/2),dy=e.clientY-(r.top+r.height/2),m=Math.hypot(dx,dy),M=42;if(m<7){mv={x:0,y:0};S.style.transform='';return}let d=Math.min(M,m),nx=dx/m,ny=dy/m;mv={x:nx*d/M,y:-ny*d/M};S.style.transform=`translate(${nx*d}px,${ny*d}px)`}
+J.onpointerdown=e=>{jid=e.pointerId;J.setPointerCapture(jid);jm(e)};J.onpointermove=e=>{if(e.pointerId===jid)jm(e)};J.onpointerup=J.onpointercancel=e=>{jid=null;mv={x:0,y:0};S.style.transform=''};
+$('look').onpointerdown=e=>{lid=e.pointerId;$('look').setPointerCapture(lid);lx=e.clientX;ly=e.clientY};$('look').onpointermove=e=>{if(e.pointerId!==lid)return;yaw-=(e.clientX-lx)*.006;pitch=Math.max(-.4,Math.min(.3,pitch-(e.clientY-ly)*.004));lx=e.clientX;ly=e.clientY};$('look').onpointerup=e=>lid=null;
+$('cam').onclick=()=>{mode=(mode+1)%3;$('hud').textContent=(area==='town'?'Home Town':area)+' · '+(mode===0?'First Person':mode===1?'Third Person':'Wide Third Person')};
+$('decor').onclick=()=>{if(area==='bedroom')$('decorate').style.display='flex'};
+const cols=['#ffffff','#9ed6ff','#ffb9cf','#b9e8ad'];$('bedC').onclick=()=>{bedIndex=(bedIndex+1)%4;buildBedroom()};$('pcC').onclick=()=>{pcIndex=(pcIndex+1)%4;buildBedroom()};document.querySelectorAll('[data-add]').forEach(b=>b.onclick=()=>{if(extras.length<6)extras.push(b.dataset.add);buildBedroom()});$('removeF').onclick=()=>{extras.pop();buildBedroom()};
+function message(t,b){$('mt').textContent=t;$('mb').textContent=b;$('modal').style.display='flex'}
+$('A').onclick=()=>{if(area==='bedroom')setArea('hall');else if(area==='hall')setArea('downstairs');else if(area==='downstairs')setArea('town');else if(area==='town'){if(player.position.z<-1){setArea('lab');message('Professor Weggy',`${chars.player.name}! ${chars.rival.name} is already here. Come to the starter table.`)}else message('Explore','Follow the path north to Professor Weggy’s laboratory.')}else if(area==='lab'&&!starterName){$('starterText').textContent=`${chars.player.name}, choose your first Robomon. ${chars.rival.name} will choose one of the remaining two.`;$('starter').style.display='flex'}};
+document.querySelectorAll('[data-mon]').forEach(b=>b.onclick=()=>{starterName=b.dataset.mon;let o=['Sapling','Billy','Bob'].filter(x=>x!==starterName);rivalStarter=o[Math.floor(Math.random()*o.length)];motherboards=5;$('starter').style.display='none';message('Your first Robomon!',`${chars.player.name} chose ${starterName}. ${chars.rival.name} chose ${rivalStarter}. Professor Weggy gave you 5 Motherboards!`);$('hud').textContent=`${starterName} · Motherboards ×5`});
+const clock=new THREE.Clock();function animate(){requestAnimationFrame(animate);if(worldStarted&&player){let dt=Math.min(clock.getDelta(),.033),f=mv.y*3.2*dt,r=mv.x*3.2*dt,dir=new THREE.Vector3(Math.sin(yaw),0,Math.cos(yaw)),right=new THREE.Vector3(dir.z,0,-dir.x);player.position.addScaledVector(dir,f).addScaledVector(right,r);let lim=area==='town'?14:5;player.position.x=Math.max(-lim,Math.min(lim,player.position.x));player.position.z=Math.max(-lim,Math.min(lim,player.position.z));if(Math.abs(f)+Math.abs(r)>.001)player.rotation.y=Math.atan2(dir.x,dir.z);let eye=player.position.clone().add(new THREE.Vector3(0,1.6,0));if(mode===0){player.visible=false;camera.position.copy(eye);camera.rotation.order='YXZ';camera.rotation.y=yaw;camera.rotation.x=pitch}else{player.visible=true;let d=mode===1?3.5:5.7,h=mode===1?2.2:3.2;camera.position.lerp(player.position.clone().add(new THREE.Vector3(-Math.sin(yaw)*d,h,-Math.cos(yaw)*d)),.16);camera.lookAt(eye.clone().add(new THREE.Vector3(0,pitch*2,0)))}}renderer.render(scene,camera)}animate();
+addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);preview()});
 </script></body></html>
