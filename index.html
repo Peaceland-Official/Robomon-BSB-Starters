@@ -1,0 +1,76 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Robomon: Motherboard Adventures</title><style>
+*{box-sizing:border-box;touch-action:none}html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:system-ui;background:#111}
+canvas{width:100vw;height:100vh;display:block}
+#dialog,#names,#decorate,#starters{position:fixed;z-index:10}
+#names{inset:0;background:linear-gradient(#bfeaff,#ecf8ff);display:flex;align-items:center;justify-content:center}
+.card{background:#fff;border:4px solid #263238;border-radius:18px;box-shadow:0 8px 0 #0003;padding:22px;width:min(90vw,460px);text-align:center}
+input{font-size:18px;padding:12px;border:2px solid #777;border-radius:10px;width:90%;margin:6px}
+button{font:800 17px system-ui;border:3px solid #27323a;border-radius:12px;padding:11px 16px;background:#fff;box-shadow:0 4px 0 #27323a;margin:5px}
+button:active{transform:translateY(3px);box-shadow:0 1px #27323a}
+#dialog{display:none;left:5%;right:5%;bottom:18px;background:#fff;border:4px solid #263238;border-radius:16px;padding:15px;font-weight:700}
+#decorate{display:none;right:10px;top:10px;background:#fffE;border:3px solid #333;border-radius:14px;padding:8px;max-width:250px}
+#starters{display:none;inset:0;background:#d9f3ff;align-items:center;justify-content:center;flex-direction:column}
+.starterRow{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}.starter{width:115px;height:150px}
+.mon{height:85px;display:flex;align-items:center;justify-content:center}
+#joy{position:fixed;z-index:6;left:25px;bottom:25px;width:130px;height:130px;border-radius:50%;background:#ffffff55;border:4px solid #fff9}
+#stick{position:absolute;width:54px;height:54px;left:50%;top:50%;margin:-27px;border-radius:50%;background:linear-gradient(#fff,#aebbc3);border:3px solid #344955;box-shadow:0 5px 8px #0005}
+#A{position:fixed;z-index:6;right:28px;bottom:40px;width:94px;height:94px;border-radius:50%;font-size:40px;color:white;background:radial-gradient(circle at 35% 25%,#ff8a8a,#d92736 60%,#9c1420);border:5px solid white;box-shadow:0 7px 0 #78121b}
+#top{position:fixed;top:10px;left:10px;background:#fffD;padding:8px 12px;border:3px solid #333;border-radius:12px;font-weight:800;z-index:5}
+</style></head><body>
+<canvas id="g"></canvas><div id="top">Upstairs Bedroom</div>
+<div id="names"><div class="card"><h1>ROBOMON</h1><p>Before our adventure begins...</p><input id="pname" maxlength="12" placeholder="Your name"><input id="rname" maxlength="12" placeholder="Your rival's name"><br><button onclick="begin()">BEGIN</button></div></div>
+<div id="joy"><div id="stick"></div></div><button id="A">A</button>
+<div id="decorate"><b>ROOM DECORATOR</b><br><button onclick="cycleBed()">Bed colour</button><button onclick="cyclePC()">PC colour</button><button onclick="addChair()">+ Chair</button><button onclick="addPlant()">+ Plant</button><button onclick="removeLast()">Remove last</button><button onclick="decorate.style.display='none'">Done</button></div>
+<div id="dialog"></div>
+<div id="starters"><div class="card"><h2>Professor Weggy</h2><p id="speech"></p><div class="starterRow">
+<button class="starter" onclick="choose('Sapling')"><div class="mon">🌱</div>Sapling</button>
+<button class="starter" onclick="choose('Billy')"><div class="mon">🤖</div>Billy</button>
+<button class="starter" onclick="choose('Bob')"><div class="mon">⚙️</div>Bob</button></div></div></div>
+<script>
+const C=g,X=C.getContext('2d');let W,H,P={x:220,y:260},joy={x:0,y:0},playerName='',rivalName='',room=true,lab=false,starter=null,rivalStarter=null;
+let bedColors=['#fff','#9ed6ff','#ffb8d2','#b8f0b1','#ffd782'],pcColors=['#d9d9d9','#242424','#76b7ff','#ef7c7c'],bi=0,pi=0,extras=[];
+function size(){C.width=innerWidth*devicePixelRatio;C.height=innerHeight*devicePixelRatio;X.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);W=innerWidth;H=innerHeight}onresize=size;size();
+function begin(){playerName=pname.value.trim()||'Player';rivalName=rname.value.trim()||'Rival';names.style.display='none';say(`Welcome, ${playerName}! This is your room. Tap A near furniture to interact.`)}
+function say(t){dialog.textContent=t;dialog.style.display='block';setTimeout(()=>dialog.style.display='none',2800)}
+function rect(x,y,w,h,c){X.fillStyle=c;X.fillRect(x,y,w,h);X.strokeStyle='#333';X.lineWidth=3;X.strokeRect(x,y,w,h)}
+function drawRoom(){
+ X.fillStyle='#e9dfcf';X.fillRect(0,0,W,H);X.strokeStyle='#d0c1aa';X.lineWidth=1;for(let i=0;i<W;i+=35){X.beginPath();X.moveTo(i,0);X.lineTo(i,H);X.stroke()}
+ rect(40,45,115,190,bedColors[bi]);X.fillStyle='#f7f7f7';X.fillRect(45,50,105,45);X.strokeRect(45,50,105,45);
+ rect(W-160,60,90,55,pcColors[pi]);rect(W-150,115,70,42,'#8b6849');X.fillStyle='#6ee7ff';X.fillRect(W-148,68,66,35);
+ rect(W/2-55,H-42,110,42,'#a67b52');X.fillStyle='#fff';X.fillText('STAIRS',W/2-25,H-18);
+ extras.forEach(e=>{if(e.t==='chair'){rect(e.x,e.y,35,35,'#d38b59')}else{X.fillStyle='#4eaa5b';X.beginPath();X.arc(e.x+15,e.y+10,16,0,7);X.fill();rect(e.x+5,e.y+22,22,24,'#b87949')}})
+}
+function drawTown(){
+ X.fillStyle='#72bf5c';X.fillRect(0,0,W,H);X.fillStyle='#d6c28a';X.fillRect(W/2-55,0,110,H);
+ // home
+ rect(35,55,150,120,'#f1e5ce');X.fillStyle='#b85a4e';X.beginPath();X.moveTo(25,55);X.lineTo(110,10);X.lineTo(195,55);X.fill();rect(95,125,35,50,'#6b4936');
+ // lab
+ rect(W-230,55,190,150,'#e8eef2');X.fillStyle='#537a9c';X.beginPath();X.moveTo(W-245,55);X.lineTo(W-135,10);X.lineTo(W-25,55);X.fill();rect(W-155,145,40,60,'#607d8b');X.fillStyle='#222';X.font='bold 15px system-ui';X.fillText("WEGGY LAB",W-190,90);
+}
+function drawLab(){
+ X.fillStyle='#d7e6e8';X.fillRect(0,0,W,H);for(let i=0;i<W;i+=48){X.strokeStyle='#b5c8ca';X.strokeRect(i,0,48,H)}
+ rect(W/2-170,80,340,85,'#e7e0cc');['Sapling','Billy','Bob'].forEach((n,i)=>{let xx=W/2-110+i*110;X.fillStyle=['#61a94f','#68a8d8','#d9a05b'][i];X.beginPath();X.arc(xx,115,22,0,7);X.fill();X.fillStyle='#222';X.font='12px system-ui';X.fillText(n,xx-20,153)})
+ X.fillStyle='#784f31';X.fillRect(W/2-16,220,32,45);X.fillStyle='#f1c4a0';X.beginPath();X.arc(W/2,210,18,0,7);X.fill();X.fillStyle='#fff';X.font='bold 13px system-ui';X.fillText('PROF. WEGGY',W/2-47,285)
+}
+function drawPlayer(){X.fillStyle='#e14b45';X.fillRect(P.x-12,P.y-8,24,28);X.fillStyle='#efc09c';X.beginPath();X.arc(P.x,P.y-16,10,0,7);X.fill();X.fillStyle='#283744';X.fillRect(P.x-11,P.y-26,22,6)}
+function render(){X.clearRect(0,0,W,H);if(room)drawRoom();else if(lab)drawLab();else drawTown();drawPlayer()}
+function loop(){if(names.style.display==='none'&&starters.style.display!=='flex'){let m=Math.hypot(joy.x,joy.y)||1;if(m>.1){P.x+=joy.x/m*3;P.y+=joy.y/m*3}P.x=Math.max(15,Math.min(W-15,P.x));P.y=Math.max(20,Math.min(H-20,P.y))}render();requestAnimationFrame(loop)}requestAnimationFrame(loop);
+function cycleBed(){bi=(bi+1)%bedColors.length}function cyclePC(){pi=(pi+1)%pcColors.length}
+function addChair(){extras.push({t:'chair',x:180+Math.random()*150,y:80+Math.random()*150})}function addPlant(){extras.push({t:'plant',x:180+Math.random()*150,y:80+Math.random()*150})}function removeLast(){extras.pop()}
+A.onclick=()=>{
+ if(room){
+  if(Math.hypot(P.x-95,P.y-140)<110){decorate.style.display='block';return}
+  if(Math.hypot(P.x-(W-115),P.y-90)<90){decorate.style.display='block';return}
+  if(P.y>H-90){room=false;P={x:110,y:220};top.textContent='Home Town';say('Mum: Professor Weggy was looking for you. His lab is across town!')}
+ }else if(!lab){
+  if(P.x>W-260&&P.y<240){lab=true;P={x:W/2,y:H-70};top.textContent="Professor Weggy's Lab";say(`${rivalName} is already here. Professor Weggy is waiting by the starter table.`)}
+ }else if(Math.hypot(P.x-W/2,P.y-230)<90&&!starter){
+   speech.textContent=`${playerName}, ${rivalName} — today you each receive your first Robomon. ${playerName}, you may choose first.`;
+   starters.style.display='flex'
+ }
+};
+function choose(n){starter=n;let others=['Sapling','Billy','Bob'].filter(x=>x!==n);rivalStarter=others[Math.floor(Math.random()*others.length)];starters.style.display='none';say(`${playerName} chose ${starter}! ${rivalName} chose ${rivalStarter}! Professor Weggy gives you 5 Motherboards.`);top.textContent=`${playerName} · ${starter} · Motherboards ×5`}
+const J=joy,ST=stick;function jm(e){let r=J.getBoundingClientRect(),q=e.touches?e.touches[0]:e,dx=q.clientX-(r.left+r.width/2),dy=q.clientY-(r.top+r.height/2),m=Math.hypot(dx,dy)||1,d=Math.min(38,m);joy={x:dx/m*d/38,y:dy/m*d/38};ST.style.transform=`translate(${dx/m*d}px,${dy/m*d}px)`}
+J.addEventListener('touchstart',jm);J.addEventListener('touchmove',jm);J.addEventListener('touchend',()=>{joy={x:0,y:0};ST.style.transform=''});
+</script></body></html>
